@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bootstrapping-methods-wt"
+version = "0.1.0"
+description = "scipy.fft based phase scrambler for wavelet bootstrapping"
+readme = "Readme.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "pycwt",
+    "scipy",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

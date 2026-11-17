@@ -1,0 +1,14 @@
+name: bootstrapping
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - matplotlib
+  - pycwt
+  - jupyterlab
+  - ipykernel
+  - pip
+  - pip:
+      - -e .
