@@ -149,7 +149,7 @@ def scramble_bootstrap(signal : ArrayLike, dt : float, dj : float, s0 : float, J
         with plt.ioff():
             t = range(len(signal)) * dt
 
-            fig, ax = plt.subplot()
+            fig, ax = plt.subplots()
             ax.plot(t, bootstrap, label='Scrambled')
             ax.plot(t, signal, label='Signal')
             ax.set_title('Signal vs Scramble')
