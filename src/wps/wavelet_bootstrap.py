@@ -159,82 +159,82 @@ def scramble_bootstrap(signal : ArrayLike, dt : float, dj : float, s0 : float, J
         return power, periods, coi, avg_power, p_values, sig_line
 
 
-    def wps_plot(power: Arraylike, t: Arraylike, periods: Arraylike, coi: Arraylike, avg_power: Arraylike, p_values: Arraylike, sigline: Arraylike, cmap: str = 'turbo', title: str = 'Wavelet Power Spectrum'):
-        '''
-        Plots the output of a wavelet power spectra function
+def wps_plot(power: ArrayLike, t: ArrayLike, periods: ArrayLike, coi: ArrayLike, avg_power: ArrayLike, p_values: ArrayLike, sigline: ArrayLike, cmap: str = 'turbo', title: str = 'Wavelet Power Spectrum'):
+    '''
+    Plots the output of a wavelet power spectra function
 
-        Parameters:
-        -----------
-        wave : ArrayLike
-            Raw wavelet transform cooefficients
-        scales : ArrayLike
-            Scales used for the transform
-        periods : ArrayLike
-            Inverse of the fftfreqs for plotting
-        coi : ArrayLike
-            Cone of influence for plotting what of the power spectra is reliable
-        fft : ArrayLike
-            The fft of the signal
-        power : ArrayLike
-            The power at a given point calculated by squaring the modulus of the coefficient at a point and normalizing by the scale
-        avg_power: ArrayLike
-            Average power across a particular period
-        p_values : ArrayLike
-            Maps a p-value to every pixel in the wavelet power spectra
-        sigline : ArrayLike
-            Significance threshold at every period for plotting average power vs significance threshold
-        cmap : str
-            Matplotlib color map that should be used for display
-        title : str
-            Figure title
+    Parameters:
+    -----------
+    wave : ArrayLike
+        Raw wavelet transform cooefficients
+    scales : ArrayLike
+        Scales used for the transform
+    periods : ArrayLike
+        Inverse of the fftfreqs for plotting
+    coi : ArrayLike
+        Cone of influence for plotting what of the power spectra is reliable
+    fft : ArrayLike
+        The fft of the signal
+    power : ArrayLike
+        The power at a given point calculated by squaring the modulus of the coefficient at a point and normalizing by the scale
+    avg_power: ArrayLike
+        Average power across a particular period
+    p_values : ArrayLike
+        Maps a p-value to every pixel in the wavelet power spectra
+    sigline : ArrayLike
+        Significance threshold at every period for plotting average power vs significance threshold
+    cmap : str
+        Matplotlib color map that should be used for display
+    title : str
+        Figure title
+    
+    Returns:
+    --------
+    fig : Figure
+        Wavelet power spectra plot, call fig.show() to display
+    '''
+    with plt.ioff():
+        fig, axs = plt.subplots(1, 2, figsize=(12, 6), sharey=True, 
+                        gridspec_kw={'width_ratios': [4, 1]})
+        fig.suptitle(title, fontsize=16)
+
+        t_grid, p_grid = np.meshgrid(t, periods)
+
+        # Wavelet power spectrum
+        im = axs[0].pcolormesh(t_grid, p_grid, power, cmap=cmap, shading='auto')
+        axs[0].contour(t_grid, p_grid, p_values, levels=[.01], colors='black')
+        axs[0].set_title('Full Power Spectrum')
+        axs[0].set_xlabel('Time (s)')
+        axs[0].set_ylabel('Period (s)')
+        axs[0].set_ylim(2 * dt, coi.max())
+
+        # Add a colorbar to show the power levels
+        fig.colorbar(im, ax=axs[0], label='Power', location='left')
+
+
+        axs[0].fill_between(t, coi, periods.max(), color="w", alpha=0.5, hatch="x", label="COI")
+        axs[0].plot(t, coi, "w--", lw=0.8, alpha=0.7)
+
+        axs[0].legend(loc='upper right')
+
         
-        Returns:
-        --------
-        fig : Figure
-            Wavelet power spectra plot, call fig.show() to display
-        '''
-        with plt.ioff():
-            fig, axs = plt.subplots(1, 2, figsize=(12, 6), sharey=True, 
-                            gridspec_kw={'width_ratios': [4, 1]})
-            fig.suptitle(title, fontsize=16)
+        # Averaged time spectra
+        axs[1].plot(avg_power, periods)
+        axs[1].plot(sigline, periods, 'k--', label='99% Significance')
+        axs[1].set_title('Averaged Spectrum')
+        axs[1].set_xlabel('Average Power')
 
-            t_grid, p_grid = np.meshgrid(t, periods)
-
-            # Wavelet power spectrum
-            im = axs[0].pcolormesh(t_grid, p_grid, power, cmap=cmap, shading='auto')
-            axs[0].contour(t_grid, p_grid, p_values, levels=[.01], colors='black')
-            axs[0].set_title('Full Power Spectrum')
-            axs[0].set_xlabel('Time (s)')
-            axs[0].set_ylabel('Period (s)')
-            axs[0].set_ylim(2 * dt, coi.max())
-
-            # Add a colorbar to show the power levels
-            fig.colorbar(im, ax=axs[0], label='Power', location='left')
+        # Set the x-axis to a logarithmic scale to better see the peaks
+        axs[1].set_xscale('log')
+        axs[1].set_xlim(1e-4,1e2)
+        axs[1].legend(loc='upper right')
 
 
-            axs[0].fill_between(t, coi, periods.max(), color="w", alpha=0.5, hatch="x", label="COI")
-            axs[0].plot(t, coi, "w--", lw=0.8, alpha=0.7)
-
-            axs[0].legend(loc='upper right')
-
-            
-            # Averaged time spectra
-            axs[1].plot(avg_power, periods)
-            axs[1].plot(sigline, periods, 'k--', label='99% Significance')
-            axs[1].set_title('Averaged Spectrum')
-            axs[1].set_xlabel('Average Power')
-
-            # Set the x-axis to a logarithmic scale to better see the peaks
-            axs[1].set_xscale('log')
-            axs[1].set_xlim(1e-4,1e2)
-            axs[1].legend(loc='upper right')
+        axs[0].invert_yaxis()
+        axs[0].set_yscale('log')
 
 
-            axs[0].invert_yaxis()
-            axs[0].set_yscale('log')
+        plt.tight_layout(rect=[0, 0, 1, 0.96]) # Adjust layout for suptitle
 
-
-            plt.tight_layout(rect=[0, 0, 1, 0.96]) # Adjust layout for suptitle
-
-        return fig
-            
+    return fig
+        
