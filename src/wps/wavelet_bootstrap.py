@@ -193,6 +193,9 @@ def wps_plot(power: ArrayLike, t: ArrayLike, periods: ArrayLike, coi: ArrayLike,
     fig : Figure
         Wavelet power spectra plot, call fig.show() to display
     '''
+
+    dt = t[1] - t[0]
+
     with plt.ioff():
         fig, axs = plt.subplots(1, 2, figsize=(12, 6), sharey=True, 
                         gridspec_kw={'width_ratios': [4, 1]})
