@@ -152,6 +152,9 @@ def scramble_bootstrap(signal : ArrayLike, dt : float, dj : float, s0 : float, J
             fig, ax = plt.subplots()
             ax.plot(t, bootstrap, label='Scrambled')
             ax.plot(t, signal, label='Signal')
+            ax.set_ylabel('Amplitude')
+            ax.set_xlabel('Time')
+            ax.grid()
             ax.set_title('Signal vs Scramble')
             ax.legend()
             return power, periods, coi, avg_power, p_values, sig_line, fig
